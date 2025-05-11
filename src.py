@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 
 
 def filter_players_by_toi(data_years: list, min_toi: int) -> pd.DataFrame:
@@ -90,21 +90,20 @@ for min_toi in min_tois:
                             .merge(gc_2023, on='Player') \
                             .merge(gc_2024, on='Player')
 
-            # Compute weighted average of past GC/60 values to use as predictor
+            # Compute average of past GC/60 values to use as "predictor"
             merged['Prediction GC/60'] = (
-                merged['GC/60 2018'] * 0.1 +
-                merged['GC/60 2019'] * 0.1 +
-                merged['GC/60 2021'] * 0.3 +
-                merged['GC/60 2022'] * 0.5 
-            )
+                merged['GC/60 2018'] +
+                merged['GC/60 2019'] +
+                merged['GC/60 2021'] +
+                merged['GC/60 2022'] ) / 4
 
-            # Calculate average R² across two years to assess prediction quality
-            X = merged[['Prediction GC/60']]
-            y_2023 = merged['GC/60 2023']
-            y_2024 = merged['GC/60 2024']
-            r_squared = (LinearRegression().fit(X, y_2023).score(X, y_2023) +
-                  LinearRegression().fit(X, y_2024).score(X, y_2024)) / 2
+            # Compute average of GC/60 values to use to be "predicted"
+            merged['Actual GC/60'] = (
+                merged['GC/60 2023'] +
+                merged['GC/60 2024'] ) / 2
 
+            # Calculate R² and populate matrix
+            r_squared = (r2_score(merged['Actual GC/60'], merged['Prediction GC/60']))
             r_squared_matrix[i, j] = r_squared
 
 
@@ -139,11 +138,11 @@ for min_toi in min_tois:
     # Make scatter plot of predicted goals created vs actual goals created
     plt.figure(figsize=(8, 8))
     plt.plot([0, 3.5], [0, 3.5], linestyle='--', color='red')
-    plt.scatter(plot_df['Actual GC/60'], plot_df['Prediction GC/60'], alpha=0.7)
+    plt.scatter(plot_df['Prediction GC/60'], plot_df['Actual GC/60'], alpha=0.7)
     
-    plt.xlabel('Actual GC/60')
+    plt.xlabel('Predicted GC/60')
     plt.xlim(0, 3.5)
-    plt.ylabel('Predicted GC/60')
+    plt.ylabel('Actual GC/60')
     plt.ylim(0, 3.5)
 
     plt.title(f'Predicted vs Actual GC/60\nTOI ≥ {min_toi} | Total Players = {tot_players}')
@@ -164,7 +163,6 @@ for min_toi in min_tois:
 
     plt.xlabel('Primary Assist Weight')
     plt.ylabel('Secondary Assist Weight')
-    plt.gca().invert_yaxis()
 
     plt.title(f'R² Heatmap (TOI ≥ {min_toi})')
     plt.tight_layout()
