@@ -8,7 +8,7 @@ For each assist weight combination and TOI threshold, the code:
 - Calculates GC/60 for each player.
 - Uses a linear regression model using historical GC/60 to predict GC/60 in later seasons.
 - Evaluates model accuracy using average R² over two future seasons.
-- Visualizes the results with, scatter plots, heat maps, and a line graph
+- Visualizes the results with, scatter plots, heat maps, and line graphs
 
 All of the NHL player data that I used came from [NaturalStatTrick](https://www.naturalstattrick.com)
 

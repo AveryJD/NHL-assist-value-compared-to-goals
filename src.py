@@ -153,17 +153,23 @@ for min_toi in min_tois:
 
     # Make heatmap of R² values by weight combo
     plt.figure(figsize=(12, 8))
-    sns.heatmap(
+    ax = sns.heatmap(
         r_squared_matrix.T,
         xticklabels=[f"{p:.2f}" for p in primary_weights],
         yticklabels=[f"{s:.2f}" for s in secondary_weights],
-        cmap='RdYlGn',
+        cmap='Spectral',
         annot=False,
+        vmin=0.6,
+        vmax=0.72, # Min and max values are specific to 300 TOI minimum value
     )
 
     plt.xlabel('Primary Assist Weight')
     plt.ylabel('Secondary Assist Weight')
+    ax.invert_yaxis()
 
+    cbar = ax.collections[0].colorbar
+    cbar.set_label('R² Value')
+    cbar.ax.yaxis.set_label_position('left')
     plt.title(f'R² Heatmap (TOI ≥ {min_toi})')
     plt.tight_layout()
     plt.savefig(f'plots/heatmap_{min_toi}_toi.png')
