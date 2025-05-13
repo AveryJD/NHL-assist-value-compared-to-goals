@@ -15,4 +15,4 @@ All of the NHL player data that I used came from [NaturalStatTrick](https://www.
 ## Check it Out
 Below you can view the blog that goes into details on this experiment:
 
-The blog post [Coming Soon] found on [my website](https://analyticswithavery.com).
+[The Blog Post](https://analyticswithavery.com/blog/1)
